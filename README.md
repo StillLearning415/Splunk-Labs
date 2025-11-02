@@ -1,29 +1,49 @@
-# Splunk Labs Portfolio
+# 🧠 Splunk + Sysmon Correlation Labs
 
-A collection of my hands-on Splunk labs focused on **security monitoring, threat detection, and SIEM engineering**.  
-This portfolio demonstrates practical use of **Splunk Enterprise**, **Splunk Cloud**, and **security data analytics** in real-world scenarios.
+This repository demonstrates endpoint telemetry correlation using **Sysmon** and **Splunk Enterprise**, showing how system activity can be captured, normalized, and analyzed through custom SPL queries.
 
----
-
-## 🧭 Overview
-
-These labs showcase my work as a cybersecurity student and Splunk practitioner.  
-Each project includes setup steps, screenshots, and detection logic for different threat use cases — from log ingestion to alert tuning.
+Each lab focuses on specific event relationships and PowerShell-driven behaviors to simulate realistic attacker telemetry while ensuring safe, contained testing.
 
 ---
 
-## 🧩 Labs Included
+## 🔍 Lab Index
 
-| Lab Name | Description | Key Focus |
-|-----------|--------------|------------|
-| **Brute Force Detection** | Detects repeated login failures followed by successful access | Security Correlation Search |
-| **Suspicious PowerShell Execution** | Identifies encoded or obfuscated PowerShell activity | Threat Hunting |
-| **Firewall Data Onboarding** | Parses and normalizes firewall logs using Splunk CIM | Data Ingestion |
-| **SIEM Dashboard Project** | Custom security dashboard for SOC visibility | Data Visualization |
-
-*(Add or remove labs as needed — each can live in its own folder.)*
+### [Lab 1 – Correlating Sysmon Events in Splunk](Lab-1-Sysmon-Correlation.md)
+**Objective:** Validate that Splunk and Sysmon are correctly configured to capture and correlate basic endpoint activities.  
+**Scenario:**  
+A PowerShell session executes basic user-level actions (DNS queries, network connections, and process creation).  
+**Key Event Codes:** `1 (Process Creation)`, `3 (Network Connection)`, `22 (DNS Query)`  
+**Outcome:**  
+All correlated Sysmon events appeared in Splunk within the same PowerShell process window, confirming visibility into process, network, and DNS telemetry.
 
 ---
 
-## 📁 Repository Structure
+### [Lab 2 – Correlating Multi-Stage PowerShell Activity in Splunk](SysmonLab2.md)
+**Objective:** Demonstrate correlation of a multi-stage PowerShell command sequence involving file creation, DNS resolution, and outbound network traffic.  
+**Scenario:**  
+A PowerShell command downloads a file and writes it to disk (`Invoke-WebRequest`), producing file, DNS, and network activity.  
+**Key Event Codes:** `1 (Process Creation)`, `3 (Network Connection)`, `11 (File Create)`, `22 (DNS Query)`  
+**Outcome:**  
+Splunk successfully linked all four telemetry points to the same PowerShell PID, verifying complete cross-layer correlation between Sysmon and Splunk.
 
+---
+
+## 🧰 Tools Used
+- **Sysmon v14.0** (schema 4.90)
+- **Splunk Enterprise (Windows index)**
+- **Sysmon Configuration:** `sysmon_lab.xml`
+- **Windows 10 test environment**
+
+---
+
+## 🧩 Purpose
+These labs serve as a portfolio showcase for:
+- Endpoint data visibility and telemetry validation  
+- Query development and field normalization in Splunk  
+- Demonstrating SIEM correlation logic using safe, local event data  
+
+Each lab highlights practical blue-team detection techniques for process and network correlation — foundational for SOC and DFIR work.
+
+---
+
+## 📂 Repository Structure
