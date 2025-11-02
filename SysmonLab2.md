@@ -1,4 +1,4 @@
-🧪 Lab 2: Correlating Sysmon Events in Splunk
+🧪 Lab 2: Correlating Multi-Stage PowerShell Activity in Splunk
 
 Date: 2025-11-01 (UTC-5)
 
@@ -64,4 +64,5 @@ EventCode	Description	Observation
 Sysmon successfully captured and correlated PowerShell’s behavior across process creation, file modification, DNS resolution, and network activity.
 
 Splunk’s query confirmed visibility into all stages of execution, validating that Sysmon and Splunk are properly configured for endpoint telemetry correlation.
+
 
