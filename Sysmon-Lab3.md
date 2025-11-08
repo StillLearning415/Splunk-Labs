@@ -6,6 +6,9 @@ Date: 2025-11-07 (UTC-5)
 
 
 
+
+
+
 🎯 Objective
 
 
@@ -36,6 +39,9 @@ MITRE Technique: T1070.006 — Indicator Removal → Timestomp
 
 
 
+
+
+
 🧰 Tools Used
 
 
@@ -49,6 +55,10 @@ Splunk Enterprise (Windows index)
 
 
 Sysmon Configuration: sysmon\_lab.xml (from previous labs)
+
+
+
+
 
 
 
@@ -83,6 +93,9 @@ index=windows (EventID=2 OR EventCode=2) earliest=-7d@d
 | table \_time User Image TargetFilename PreviousCreation Creation
 
 | sort -\_time
+
+
+
 
 
 
@@ -134,6 +147,9 @@ Redacted safe paths and username
 
 
 
+
+
+
 ✅ Results
 
 Field	Description	Observation
@@ -154,6 +170,9 @@ Sysmon exposes both timestamps, enabling defenders to catch timestamp forgery at
 
 🖼️ Screenshot Evidence
 ![Sysmon Event ID 2 — redacted table](Sysmon-Lab3.png)
+
+
+
 
 
 
@@ -183,6 +202,7 @@ attempts to hide activity in the event timeline
 
 
 This technique is directly relevant to real-world SOC workflows and aligns with MITRE ATT\&CK T1070.006.
+
 
 
 
