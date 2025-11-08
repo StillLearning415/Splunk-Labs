@@ -68,7 +68,3 @@ Splunk correlation demonstrated visibility of both legitimate and test entries, 
 This lab verifies that Sysmon telemetry can identify **startup persistence techniques**, completing the foundation for endpoint visibility in a SOC workflow.
 
 ---
-
-**Next Suggested Lab:**  
-**Lab 5 — Detecting Service Creation Persistence (Sysmon Event ID 12)**  
-This would extend detection to service-based persistence and privilege escalation.  
