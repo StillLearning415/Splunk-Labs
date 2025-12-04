@@ -86,7 +86,8 @@ index=windows EventCode=10 TargetImage="\*lsass.exe" earliest=-30m
 
 
 
-!\[Sysmon-Lab5 Evidence](SysmonLab5.png)
+!\[Sysmon-Lab5 Evidence]
+(SysmonLab5.png)
 
 
 
@@ -151,5 +152,6 @@ Sysmon successfully detected process access to LSASS via Event ID 10. By monitor
 
 
 This detection capability is critical for identifying post-exploitation activity and preventing credential theft in enterprise environments.
+
 
 
