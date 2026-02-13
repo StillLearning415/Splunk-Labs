@@ -57,7 +57,7 @@ index=windows (EventCode=13 OR EventID=13)
 | 2025-11-08 14:08:05 | REDACTED_USER | C:\Windows\System32\sihost.exe | HKU\REDACTED_SID\Software\Microsoft\Windows\CurrentVersion\RunNotification\StartupTNotiLab4_Test | DWORD (0x00000001) |
 | 2025-11-08 14:07:48 | REDACTED_USER | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe | HKU\REDACTED_SID\Software\Microsoft\Windows\CurrentVersion\Run\Lab4_Test | C:\Windows\System32\notepad.exe |
 
-![Sysmon-Lab4 Evidence](Sysmon-Lab4.png)
+![Sysmon-Lab4 Evidence](images/Sysmon-Lab4.png)
 
 ---
 
