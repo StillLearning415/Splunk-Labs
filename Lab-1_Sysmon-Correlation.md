@@ -48,7 +48,7 @@ index=windows (EventCode=1 OR EventCode=3 OR EventCode=22) earliest=-4h
 ---
 
 ### 🖼️ Screenshot Evidence  
- ![Lab Screenshot](lab1_sysmon_splunk.png)
+ ![Lab Screenshot](images/lab1_sysmon_splunk.png)
 
 
 ---
