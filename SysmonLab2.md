@@ -54,7 +54,7 @@ EventCode	Description	Observation
 22	DNS Query	PowerShell resolved example.com
 
 🖼️ Screenshot Evidence
-![Sysmon_Lab2_Evidence](Lab2_sysmon_splunk.png.png)
+![Sysmon_Lab2_Evidence](images/Lab2_sysmon_splunk.png)
 
 
 
@@ -64,5 +64,6 @@ EventCode	Description	Observation
 Sysmon successfully captured and correlated PowerShell’s behavior across process creation, file modification, DNS resolution, and network activity.
 
 Splunk’s query confirmed visibility into all stages of execution, validating that Sysmon and Splunk are properly configured for endpoint telemetry correlation.
+
 
 
