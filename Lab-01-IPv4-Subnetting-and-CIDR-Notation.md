@@ -1,38 +1,79 @@
-   8-bit Oct chart
-128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
+# 🌐 Lab 1: IPv4 Subnetting and CIDR Notation
 
-172.16.50.0/22 
+**Date:** 2026-02-12
 
-  Network                   Host
-10101100.00010000.001100|10.00000000
+---
 
-11111111.11111111.111111|00.00000000
+### 🎯 Objective
+Demonstrate the ability to convert IPv4 addresses to binary, derive subnet masks from CIDR notation, identify network and host portions, and calculate the full usable IP range and broadcast address for a given subnet.
 
-255.255.252.0
+---
 
+### 🧰 Reference: 8-Bit Octet Chart
 
-available IP's - 1024 usable 1022
+| 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
+|-----|----|----|-----|---|---|---|---|
 
+---
 
-Range - 10101100.00010000.00110000.00000000 - 10101100.00010000.00110011.11111111
+## Example 1 — 172.16.50.0/22
 
+### 🔢 Binary Breakdown
 
-Broadcast Ip Address - 172.16.51.255
+```
+Address:      10101100.00010000.001100|10.00000000
+Subnet Mask:  11111111.11111111.111111|00.00000000
+              |-------- Network -------|---- Host ----|
+```
 
+| Field | Value |
+|-------|-------|
+| CIDR | /22 |
+| Subnet Mask | 255.255.252.0 |
+| Broadcast Address | 172.16.51.255 |
+| Total IPs | 1024 |
+| Usable Hosts | 1022 |
 
+### 📊 Full Range
 
-10.45.0.0/18
+```
+Network:   10101100.00010000.00110000.00000000  →  172.16.48.0
+Broadcast: 10101100.00010000.00110011.11111111  →  172.16.51.255
+```
 
+---
 
-network                       Host
-00001010.00101101.00|000000.00000000
+## Example 2 — 10.45.0.0/18
 
+### 🔢 Binary Breakdown
 
-11111111.11111111.11|000000.00000000  subnet mask 255.255.192.0
+```
+Address:      00001010.00101101.00|000000.00000000
+Subnet Mask:  11111111.11111111.11|000000.00000000
+              |------- Network ----|------ Host ----|
+```
 
+| Field | Value |
+|-------|-------|
+| CIDR | /18 |
+| Subnet Mask | 255.255.192.0 |
+| Network Address | 10.45.0.0 |
+| Broadcast Address | 10.45.63.255 |
+| Total IPs | 16384 |
+| Usable Hosts | 16382 |
 
-10.45.0.0 - 10.45.63.255 - range
+### 📊 Full Range
 
-              ^
-              |
-             Broadcast
+```
+Network:   10.45.0.0
+Broadcast: 10.45.63.255
+```
+
+---
+
+### ✅ Conclusion
+Both examples demonstrate the full subnetting workflow:
+- Converting dotted-decimal to binary
+- Applying the CIDR prefix to identify the network/host boundary
+- Deriving the subnet mask
+- Calculating network address, broadcast address, and usable host range
