@@ -169,7 +169,7 @@ Sysmon exposes both timestamps, enabling defenders to catch timestamp forgery at
 
 
 🖼️ Screenshot Evidence
-![Sysmon Event ID 2 — redacted table](Sysmon-Lab3.png)
+![Sysmon Event ID 2 — redacted table](images/Sysmon-Lab3.png)
 
 
 
@@ -202,6 +202,7 @@ attempts to hide activity in the event timeline
 
 
 This technique is directly relevant to real-world SOC workflows and aligns with MITRE ATT\&CK T1070.006.
+
 
 
 
