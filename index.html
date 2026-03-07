@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLSM Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --accent: #00e5a0; --accent2: #ff6b35; --text: #e6edf3; --muted: #7d8590;
+    --correct: #3fb950; --wrong: #f85149; --purple: #a371f7;
+    --mono: 'Share Tech Mono', monospace; --sans: 'Barlow', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: 40px 20px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  h1 { font-size: clamp(24px,4vw,42px); font-weight: 900; color: var(--text); margin-bottom: 8px; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+
+  .hint-row { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; flex-wrap: wrap; }
+  .hint-label { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .bit { font-family: var(--mono); font-size: 13px; color: var(--accent2); background: rgba(255,107,53,.1); border: 1px solid rgba(255,107,53,.3); padding: 2px 8px; border-radius: 4px; }
+
+  /* Base network display */
+  .net-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .base-network { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--accent); background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.25); padding: 10px 20px; border-radius: 8px; letter-spacing: 1px; }
+  .cidr-badge { font-family: var(--mono); font-size: 13px; padding: 5px 12px; border-radius: 20px; font-weight: 700; letter-spacing: 1px; }
+  .badge-easy   { background: rgba(0,229,160,.1);  border: 1px solid var(--accent);  color: var(--accent); }
+  .badge-medium { background: rgba(255,107,53,.1); border: 1px solid var(--accent2); color: var(--accent2); }
+  .badge-hard   { background: rgba(163,113,247,.1);border: 1px solid var(--purple);  color: var(--purple); }
+
+  .instructions { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .instructions strong { color: var(--text); }
+
+  /* context note for multi-octet problems */
+  .context-note { font-family: var(--mono); font-size: 12px; color: var(--purple); background: rgba(163,113,247,.07); border: 1px solid rgba(163,113,247,.2); border-radius: 6px; padding: 8px 14px; margin-bottom: 18px; display: none; }
+  .context-note.show { display: block; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: rgba(0,229,160,.07); border-bottom: 2px solid var(--accent); }
+  th { font-family: var(--sans); font-weight: 700; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); padding: 12px 8px; text-align: center; white-space: nowrap; }
+  td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .subnet-label { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--text); }
+  .hosts-needed { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--accent2); }
+  .fixed { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* Inputs */
+  .inp { font-family: var(--mono); font-size: 13px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 5px; color: var(--text); padding: 5px 3px; outline: none; transition: border-color .2s, background .2s; text-align: center; display: inline-block; }
+  .inp:focus { border-color: var(--accent); background: rgba(0,229,160,.06); }
+  .inp.correct { border-color: var(--correct) !important; background: rgba(63,185,80,.1) !important; color: var(--correct); }
+  .inp.wrong   { border-color: var(--wrong)   !important; background: rgba(248,81,73,.1)  !important; color: var(--wrong); }
+  .inp-xs  { width: 34px; }
+  .inp-sm  { width: 44px; }
+  .inp-md  { width: 58px; }
+
+  tr.remainder td { padding-top: 14px; border-top: 1px dashed var(--border); font-family: var(--mono); font-size: 13px; }
+
+  /* Buttons */
+  .actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  button { font-family: var(--sans); font-weight: 700; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; padding: 11px 22px; border-radius: 6px; border: none; cursor: pointer; transition: all .15s; }
+  .btn-check  { background: var(--accent); color: #0d1117; }
+  .btn-check:hover { background: #00ffc4; transform: translateY(-1px); }
+  .btn-reveal { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); }
+  .btn-reveal:hover { background: rgba(255,107,53,.1); }
+  .btn-new    { background: transparent; color: var(--purple); border: 1px solid var(--purple); }
+  .btn-new:hover { background: rgba(163,113,247,.1); transform: translateY(-1px); }
+
+  #score-bar { margin-top: 18px; font-family: var(--mono); font-size: 14px; padding: 12px 16px; border-radius: 6px; display: none; }
+  #score-bar.show    { display: block; }
+  #score-bar.good    { background: rgba(63,185,80,.1);  border: 1px solid var(--correct); color: var(--correct); }
+  #score-bar.partial { background: rgba(255,107,53,.1); border: 1px solid var(--accent2); color: var(--accent2); }
+
+  @keyframes flashIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+  .flash { animation: flashIn .25s ease; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="label">Networking Practice</div>
+  <h1>Variable Length Subnet Masks <span>(VLSM)</span></h1>
+  <p class="subtitle">Randomized base network, CIDR, and host requirements every time.</p>
+
+  <div class="hint-row">
+    <span class="hint-label">Bit Values →</span>
+    <span class="bit">.128</span><span class="bit">64</span><span class="bit">32</span>
+    <span class="bit">16</span><span class="bit">8</span><span class="bit">4</span>
+    <span class="bit">2</span><span class="bit">1</span>
+  </div>
+
+  <div class="net-row">
+    <div class="base-network" id="base-display">...</div>
+    <span class="cidr-badge" id="cidr-badge"></span>
+  </div>
+
+  <div class="context-note" id="context-note"></div>
+
+  <div class="instructions">
+    <strong>Instructions:</strong> Divide the network above using VLSM, working <strong>high to low</strong>.
+    Fill in the <strong>Network Address</strong>, <strong>CIDR</strong>, <strong>Subnet Mask</strong>,
+    <strong>Block Size</strong>, <strong>First Host</strong>, <strong>Last Host</strong>, and <strong>Broadcast</strong>.
+  </div>
+
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead id="table-head"></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <button class="btn-check"  onclick="checkAnswers()">✓ Check Answers</button>
+    <button class="btn-reveal" onclick="revealAnswers()">⊙ Reveal Answers</button>
+    <button class="btn-new"    onclick="newProblem()">⟳ New Problem</button>
+  </div>
+  <div id="score-bar"></div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+let problem = null;   // { baseCidr, fixedPrefix, base3, totalAddrs, answers, multiOctet }
+
+// ── Utilities ─────────────────────────────────────────────────────────────
+const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+
+// All base CIDRs we support (classroom-realistic range)
+// /20=/16+4bits  /21=11bits  /22=10bits  /23=9bits  /24=8bits
+const CIDR_OPTIONS = [20, 21, 22, 23, 24];
+
+// Host pools scaled to available space
+function hostPool(totalAddrs) {
+  if (totalAddrs >= 4096) return [50,60,100,200,250,300,500,508,600,800,1000,2000];
+  if (totalAddrs >= 1024) return [30,50,60,100,120,200,250,300,500];
+  if (totalAddrs >= 512)  return [20,25,28,30,50,60,100,120,200,250];
+  return [2,5,6,10,12,14,20,25,28,30,50,60,62];  // /24
+}
+
+function randomSubnets(pool, maxSpace) {
+  const count = rand(4,6);
+  const labels = ["A","B","C","D","E","F"];
+  let chosen, attempts=0;
+  do {
+    chosen=[]; let used=0; attempts++;
+    for(let i=0;i<count;i++){
+      const h=pool[rand(0,pool.length-1)];
+      let b=2; while(b-2<h) b*=2;
+      used+=b; chosen.push(h);
+    }
+    if(used <= maxSpace*0.90) break;
+  } while(attempts<300);
+  chosen.sort((a,b)=>b-a);
+  return chosen.map((h,i)=>({label:labels[i],hosts:h}));
+}
+
+// ── Problem Generator ─────────────────────────────────────────────────────
+function generateProblem() {
+  const baseCidr = CIDR_OPTIONS[rand(0, CIDR_OPTIONS.length-1)];
+  const hostBits = 32 - baseCidr;
+  const totalAddrs = Math.pow(2, hostBits);
+
+  // Build a valid base IP aligned to the CIDR boundary
+  // We always store base as: fixedPrefix (e.g. "10.50") + base3 (3rd octet)
+  // For /24: base3 is a free octet, variable part is just octet4 (0-255)
+  // For /23: base3 must be even, variable spans 512 addrs across octet3-4
+  // For /22: base3 multiple of 4, spans 1024
+  // For /21: base3 multiple of 8, spans 2048
+  // For /20: base3 multiple of 16, spans 4096
+
+  // octet3 bits used for subnetting = max(0, 24 - baseCidr)
+  const octet3HostBits = Math.max(0, 24 - baseCidr); // how many bits of octet3 are "free"
+  const octet3Step = Math.pow(2, octet3HostBits);     // alignment of octet3
+  const maxBase3Steps = Math.floor(254 / octet3Step);
+  const base3 = rand(0, maxBase3Steps) * octet3Step;
+
+  const b2parts = [
+    () => `10.${rand(0,254)}`,
+    () => `172.${rand(16,31)}`,
+    () => `192.168`,
+  ];
+  const fixedPrefix = b2parts[rand(0, b2parts.length-1)]();
+
+  // Whether the variable part spans two octets (anything other than /24)
+  const multiOctet = baseCidr < 24;
+
+  // Subnets + solve
+  const pool    = hostPool(totalAddrs);
+  const subnets = randomSubnets(pool, totalAddrs);
+  const answers = solve(subnets, baseCidr);
+
+  return { baseCidr, fixedPrefix, base3, totalAddrs, answers, multiOctet };
+}
+
+// ── Solver ────────────────────────────────────────────────────────────────
+function solve(subnets, baseCidr) {
+  let offset = 0;
+  return subnets.map(s => {
+    let block = 2;
+    while (block-2 < s.hosts) block *= 2;
+    const cidr      = 32 - Math.log2(block);
+    const netAddr   = offset;
+    const firstHost = offset + 1;
+    const lastHost  = offset + block - 2;
+    const broadcast = offset + block - 1;
+    offset += block;
+
+    // Subnet mask last two octets
+    const maskFull   = (0xFFFFFFFF << (32-cidr)) >>> 0;
+    const maskO3     = (maskFull >> 8) & 0xFF;
+    const maskO4     = maskFull & 0xFF;
+
+    const split = v => ({ hi: Math.floor(v/256), lo: v%256 });
+
+    if (baseCidr === 24) {
+      return { ...s, block, cidr, maskLastOctet: maskO4,
+        netAddr, firstHost, lastHost, broadcast, nextNet: offset };
+    } else {
+      return { ...s, block, cidr, maskO3, maskO4,
+        netAddr_hi: split(netAddr).hi,   netAddr_lo: split(netAddr).lo,
+        firstHost_hi: split(firstHost).hi, firstHost_lo: split(firstHost).lo,
+        lastHost_hi: split(lastHost).hi,   lastHost_lo: split(lastHost).lo,
+        broadcast_hi: split(broadcast).hi, broadcast_lo: split(broadcast).lo,
+        nextNet: offset };
+    }
+  });
+}
+
+// ── Build UI ──────────────────────────────────────────────────────────────
+function renderProblem() {
+  const p = problem;
+  const { baseCidr, fixedPrefix, base3, answers, multiOctet } = p;
+
+  // Header
+  const baseIP = multiOctet ? `${fixedPrefix}.${base3}.0` : `${fixedPrefix}.${base3}.0`;
+  document.getElementById('base-display').textContent = `${baseIP} /${baseCidr}`;
+
+  const badge = document.getElementById('cidr-badge');
+  if (baseCidr === 24)      { badge.textContent = 'EASY — /24';   badge.className = 'cidr-badge badge-easy'; }
+  else if (baseCidr >= 22)  { badge.textContent = `MEDIUM — /${baseCidr}`; badge.className = 'cidr-badge badge-medium'; }
+  else                       { badge.textContent = `HARD — /${baseCidr}`;  badge.className = 'cidr-badge badge-hard'; }
+
+  const note = document.getElementById('context-note');
+  if (multiOctet) {
+    note.textContent = `⚠ /${baseCidr} — subnets span octets 3 & 4. Enter both parts for every address field (e.g. 0.0, 1.0, 1.128).`;
+    note.classList.add('show');
+  } else {
+    note.classList.remove('show');
+  }
+
+  // Build table
+  const prefix = multiOctet ? `${fixedPrefix}.` : `${fixedPrefix}.${base3}.`;
+
+  if (!multiOctet) {
+    buildSingleOctetTable(answers, prefix);
+  } else {
+    buildDualOctetTable(answers, base3, fixedPrefix);
+  }
+}
+
+function buildSingleOctetTable(answers, prefix) {
+  document.getElementById('table-head').innerHTML = `<tr>
+    <th>Subnet</th><th>Hosts<br>Needed</th>
+    <th>Net Addr<br>(Last Oct)</th><th>CIDR</th>
+    <th>Mask<br>(Last Oct)</th><th>Block<br>Size</th>
+    <th>First Host<br>(Last Oct)</th><th>Last Host<br>(Last Oct)</th>
+    <th>Broadcast<br>(Last Oct)</th>
+  </tr>`;
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  answers.forEach((s,i) => {
+    const tr = document.createElement('tr');
+    tr.classList.add('flash');
+    tr.innerHTML = `
+      <td class="subnet-label">${s.label}</td>
+      <td class="hosts-needed">→ ${s.hosts}</td>
+      <td><span class="fixed">${prefix}</span><input class="inp inp-sm" data-row="${i}" data-field="netAddr" placeholder="?"></td>
+      <td><span class="fixed">/</span><input class="inp inp-xs" data-row="${i}" data-field="cidr" placeholder="?"></td>
+      <td><input class="inp inp-sm" data-row="${i}" data-field="maskLastOctet" placeholder="?"></td>
+      <td><input class="inp inp-sm" data-row="${i}" data-field="block" placeholder="?"></td>
+      <td><span class="fixed">${prefix}</span><input class="inp inp-sm" data-row="${i}" data-field="firstHost" placeholder="?"></td>
+      <td><span class="fixed">${prefix}</span><input class="inp inp-sm" data-row="${i}" data-field="lastHost" placeholder="?"></td>
+      <td><span class="fixed">${prefix}</span><input class="inp inp-sm" data-row="${i}" data-field="broadcast" placeholder="?"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const nextLast = answers[answers.length-1].nextNet;
+  appendRemainder(tbody, `${prefix}${nextLast}`, 9);
+}
+
+function buildDualOctetTable(answers, base3, fixedPrefix) {
+  document.getElementById('table-head').innerHTML = `<tr>
+    <th>Subnet</th><th>Hosts<br>Needed</th>
+    <th>Net Addr<br>(Oct 3.4)</th><th>CIDR</th>
+    <th>Mask<br>(Oct 3.4)</th><th>Block<br>Size</th>
+    <th>First Host<br>(Oct 3.4)</th><th>Last Host<br>(Oct 3.4)</th>
+    <th>Broadcast<br>(Oct 3.4)</th>
+  </tr>`;
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  const pfix = `${fixedPrefix}.`;
+
+  answers.forEach((s,i) => {
+    const tr = document.createElement('tr');
+    tr.classList.add('flash');
+    tr.innerHTML = `
+      <td class="subnet-label">${s.label}</td>
+      <td class="hosts-needed">→ ${s.hosts}</td>
+      <td>${oct34inp(i, pfix, 'netAddr')}</td>
+      <td><span class="fixed">/</span><input class="inp inp-xs" data-row="${i}" data-field="cidr" placeholder="?"></td>
+      <td>${maskInp(i)}</td>
+      <td><input class="inp inp-sm" data-row="${i}" data-field="block" placeholder="?"></td>
+      <td>${oct34inp(i, pfix, 'firstHost')}</td>
+      <td>${oct34inp(i, pfix, 'lastHost')}</td>
+      <td>${oct34inp(i, pfix, 'broadcast')}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const next = answers[answers.length-1].nextNet;
+  const nHi = Math.floor(next/256) + base3, nLo = next%256;
+  appendRemainder(tbody, `${fixedPrefix}.${nHi}.${nLo}`, 9);
+}
+
+function oct34inp(i, pfix, field) {
+  return `<span class="fixed">${pfix}</span>`
+    + `<input class="inp inp-xs" data-row="${i}" data-field="${field}_hi" placeholder="?">`
+    + `<span class="fixed">.</span>`
+    + `<input class="inp inp-xs" data-row="${i}" data-field="${field}_lo" placeholder="?">`;
+}
+
+function maskInp(i) {
+  return `<input class="inp inp-xs" data-row="${i}" data-field="maskO3" placeholder="?">`
+    + `<span class="fixed">.</span>`
+    + `<input class="inp inp-xs" data-row="${i}" data-field="maskO4" placeholder="?">`;
+}
+
+function appendRemainder(tbody, label, span) {
+  const tr = document.createElement('tr');
+  tr.className = 'remainder flash';
+  tr.innerHTML = `
+    <td colspan="2" style="text-align:right;color:var(--muted);font-size:11px;letter-spacing:1px;">NEXT AVAILABLE →</td>
+    <td colspan="${span}" style="text-align:left;padding-left:10px;color:var(--accent);">${label}</td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// ── Check / Reveal ────────────────────────────────────────────────────────
+function checkAnswers() {
+  let total=0, correct=0;
+  document.querySelectorAll('.inp').forEach(inp => {
+    const val = inp.value.trim();
+    if(val===''){inp.classList.remove('correct','wrong');return;}
+    const expected = problem.answers[+inp.dataset.row][inp.dataset.field];
+    total++;
+    if(+val===expected){ inp.classList.add('correct');inp.classList.remove('wrong');correct++; }
+    else               { inp.classList.add('wrong');  inp.classList.remove('correct'); }
+  });
+  const bar=document.getElementById('score-bar');
+  if(correct===total&&total>0){ bar.className='show good'; bar.textContent=`✓  ${correct}/${total} correct — Perfect!`; }
+  else { bar.className='show partial'; bar.textContent=`⚠  ${correct}/${total} correct — Keep going!`; }
+}
+
+function revealAnswers() {
+  document.querySelectorAll('.inp').forEach(inp => {
+    inp.value = problem.answers[+inp.dataset.row][inp.dataset.field];
+    inp.classList.add('correct'); inp.classList.remove('wrong');
+  });
+  const bar=document.getElementById('score-bar');
+  bar.className='show good';
+  bar.textContent='✓  Answers revealed — hit New Problem for a fresh one!';
+}
+
+function newProblem() {
+  document.getElementById('score-bar').className='';
+  document.getElementById('score-bar').textContent='';
+  problem = generateProblem();
+  renderProblem();
+}
+
+newProblem();
+</script>
+</body>
+</html>
